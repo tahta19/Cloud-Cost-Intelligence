@@ -2,9 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================
-   CSS VARIABLES - LIGHT MODE (DEFAULT)
-   ============================================ */
+
 :root {
   /* ===== COLORS ===== */
   --color-bg-primary: #f1f5f9;
@@ -79,9 +77,6 @@
   --radius-full: 9999px;
 }
 
-/* ============================================
-   CSS VARIABLES - DARK MODE
-   ============================================ */
 .dark {
   --color-bg-primary: #0E0F11;
   --color-bg-secondary: #1A1B1E;
@@ -117,9 +112,7 @@
   --shadow-dropdown: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* ============================================
-   SYSTEM PREFERENCE (Fallback)
-   ============================================ */
+
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
     --color-bg-primary: #0E0F11;
@@ -157,9 +150,7 @@
   }
 }
 
-/* ============================================
-   GLOBAL STYLES - PAKAI TOKENS
-   ============================================ */
+
 * {
   margin: 0;
   padding: 0;
@@ -204,9 +195,6 @@ body {
   background: var(--color-border-hover);
 }
 
-/* ============================================
-   REDUCED MOTION
-   ============================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
