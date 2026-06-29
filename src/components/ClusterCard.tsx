@@ -4,6 +4,7 @@ import { StatusBadge } from './StatusBadge';
 import { EfficiencyBar } from './EfficiencyBar';
 import { MetricItem } from './MetricItem';
 import { MaterialIcon } from './MaterialIcon';
+import { CountingNumber } from './AnimatedNumber';  // ✅ Import
 
 interface ClusterCardProps {
   data: ClusterData;
@@ -61,8 +62,8 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ data, index, isVisible
       tabIndex={0}
       aria-label={`${data.title}: Cost $${data.cost}, Status ${data.status}`}
     >
-      {/* HEADER */}
       <div className="self-stretch flex flex-col justify-start items-start gap-8">
+        {/* HEADER */}
         <div className="self-stretch inline-flex justify-between items-center">
           <h3 className="text-gray-900 dark:text-[#E3E2E4] text-sm font-semibold font-['Inter'] leading-5 tracking-tight group-hover:text-blue-600 dark:group-hover:text-[#B5C4FF] transition-colors duration-300">
             {data.title}
@@ -70,13 +71,15 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ data, index, isVisible
           <StatusBadge status={data.status} />
         </div>
 
-        {/* COST */}
+        {/* COST dengan COUNTING ANIMATION */}
         <div className="self-stretch pb-[1.50px] flex flex-col justify-start items-start gap-2.5">
           <div className="self-stretch inline-flex justify-start items-center gap-2">
-            <span className="text-gray-900 dark:text-[#E3E2E4] text-4xl font-bold font-['Inter'] leading-10 tracking-tight group-hover:text-blue-600 dark:group-hover:text-[#B5C4FF] transition-colors duration-300">$</span>
-            <span className="text-gray-900 dark:text-[#E3E2E4] text-4xl font-bold font-['Inter'] leading-10 tracking-tight group-hover:text-blue-600 dark:group-hover:text-[#B5C4FF] transition-colors duration-300">
-              {data.cost}
-            </span>
+            <CountingNumber 
+              value={data.cost}
+              prefix="$"
+              duration={1.5}
+              className="text-gray-900 dark:text-[#E3E2E4] text-4xl font-bold font-['Inter'] leading-10 tracking-tight group-hover:text-blue-600 dark:group-hover:text-[#B5C4FF] transition-colors duration-300"
+            />
             <span className={`ml-auto transition-transform duration-300 group-hover:scale-110 ${
               data.trend === 'down' ? 'text-green-500 dark:text-[#5ADF8C]' : 'text-red-500 dark:text-[#FFB4AB]'
             }`}>
@@ -94,7 +97,7 @@ export const ClusterCard: React.FC<ClusterCardProps> = ({ data, index, isVisible
         {/* EFFICIENCY BAR */}
         <EfficiencyBar value={data.efficiency} isVisible={isVisible} />
 
-        {/* METRICS - di sini yang bikin nabrak, ganti gap-3.5 jadi lebih kecil */}
+        {/* METRICS */}
         <div className="self-stretch pt-2 flex flex-col justify-start items-start gap-2">
           <MetricItem
             icon={metricIcons.cpu}
