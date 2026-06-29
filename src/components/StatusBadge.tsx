@@ -1,17 +1,34 @@
+import { MaterialIcon } from './MaterialIcon';
+
 interface StatusBadgeProps {
-  status?: 'Active' | 'Warning' | 'Critical';
+  status: 'Active' | 'Warning' | 'Critical';
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status = 'Active' }) => {
-  const styles = {
-    Active: 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400 border-green-200 dark:border-green-400/20 group-hover:bg-green-200 dark:group-hover:bg-green-500/20 transition-all duration-300',
-    Warning: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400 border-yellow-200 dark:border-yellow-400/20 group-hover:bg-yellow-200 dark:group-hover:bg-yellow-500/20 transition-all duration-300',
-    Critical: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-400/20 group-hover:bg-red-200 dark:group-hover:bg-red-500/20 transition-all duration-300',
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+  const statusConfig = {
+    Active: {
+      color: 'bg-green-500/10 text-green-700 dark:bg-green-500/20 dark:text-[#5ADF8C]',
+      icon: 'check_circle',
+      className: 'active',
+    },
+    Warning: {
+      color: 'bg-yellow-500/10 text-yellow-700 dark:bg-yellow-500/20 dark:text-[#F9BD22]',
+      icon: 'warning',
+      className: 'warning',
+    },
+    Critical: {
+      color: 'bg-red-500/10 text-red-700 dark:bg-red-500/20 dark:text-[#FFB4AB]',
+      icon: 'error',
+      className: 'critical',
+    },
   };
 
+  const config = statusConfig[status];
+
   return (
-    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${styles[status]}`}>
-      {status}
-    </span>
+    <div className={`status-badge ${config.className} inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${config.color}`}>
+      <MaterialIcon name={config.icon} size="sm" />
+      <span>{status}</span>
+    </div>
   );
 };

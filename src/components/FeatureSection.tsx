@@ -4,10 +4,9 @@ import { FilterTabs } from './FilterTabs';
 import { SortDropdown } from './SortDropdown';
 import type { ClusterData } from '../types/cluster';
 import { StatusBadge } from './StatusBadge';
-import { EfficiencyBar } from './EfficiencyBar';
-import { MetricItem } from './MetricItem';
 import { Modal } from './Modal';
 import { MaterialIcon } from './MaterialIcon';
+import { ClusterCard } from './ClusterCard';
 
 export const FeatureSection: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -74,27 +73,13 @@ export const FeatureSection: React.FC = () => {
     );
   }
 
-  // Metric icons
-  const metricIcons = {
-    cpu: 'bolt',
-    ram: 'memory',
-    storage: 'database',
-    network: 'language',
-    gpu: 'sports_esports',
-  };
 
-  // Warna untuk progress bar - ini tetap butuh hex karena Tailwind tidak support dynamic gradient
-  const metricColors = {
-    cpu: '#3b82f6',
-    ram: '#8b5cf6',
-    storage: '#22c55e',
-    network: '#06b6d4',
-    gpu: '#f97316',
-  };
+
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      {/* Header - SEMUA PAKAI TOKENS */}
+      {/* Header */}
       <div className="mb-10 text-center md:text-left">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-[#1A1B1E]/80 backdrop-blur-[6px] rounded-full border border-gray-300 dark:border-[#434654] mb-6">
           <span className="relative flex h-2 w-2">
@@ -121,97 +106,18 @@ export const FeatureSection: React.FC = () => {
 
       {/* Grid - Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredData.map((cluster) => {
-          const metrics = cluster.metrics || { cpu: '0%', ram: '0GB', storage: '0TB', network: '0Mbps', gpu: '0x' };
-          
-          return (
-            <div 
-              key={cluster.id}
-              onClick={() => setSelectedCluster(cluster)}
-              className="group bg-white dark:bg-[#1E1F23] rounded-2xl p-6 border border-gray-200 dark:border-[#434654] shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.10)] dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:-translate-y-1.5 hover:border-blue-400 dark:hover:border-[#B5C4FF]/50 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[420px]"
-              role="button"
-              tabIndex={0}
-              aria-label={`${cluster.title}: Cost $${cluster.cost}, Status ${cluster.status}`}
-            >
-              {/* HEADER */}
-              <div className="self-stretch flex flex-col justify-start items-start gap-8">
-                <div className="self-stretch inline-flex justify-between items-center">
-                  <h3 className="text-gray-900 dark:text-[#E3E2E4] text-sm font-semibold leading-5 tracking-tight group-hover:text-blue-600 dark:group-hover:text-[#B5C4FF] transition-colors duration-300">
-                    {cluster.title}
-                  </h3>
-                  <StatusBadge status={cluster.status} />
-                </div>
-
-                {/* COST */}
-                <div className="self-stretch pb-[1.50px] flex flex-col justify-start items-start gap-2.5">
-                  <div className="self-stretch inline-flex justify-start items-center gap-2">
-                    <span className="text-gray-900 dark:text-[#E3E2E4] text-4xl font-bold leading-10 tracking-tight group-hover:text-blue-600 dark:group-hover:text-[#B5C4FF] transition-colors duration-300">$</span>
-                    <span className="text-gray-900 dark:text-[#E3E2E4] text-4xl font-bold leading-10 tracking-tight group-hover:text-blue-600 dark:group-hover:text-[#B5C4FF] transition-colors duration-300">
-                      {cluster.cost}
-                    </span>
-                    <span className={`ml-auto transition-transform duration-300 group-hover:scale-110 ${
-                      cluster.trend === 'down' ? 'text-green-500 dark:text-[#5ADF8C]' : 'text-red-500 dark:text-[#FFB4AB]'
-                    }`}>
-                      <MaterialIcon 
-                        name={cluster.trend === 'down' ? 'south_east' : 'north_east'} 
-                        size="base"
-                      />
-                    </span>
-                  </div>
-                  <span className="text-gray-600 dark:text-[#C3C5D7]/70 text-[10px] font-medium uppercase leading-4 tracking-widest">
-                    ESTIMATED MONTHLY COST
-                  </span>
-                </div>
-
-                {/* EFFICIENCY BAR */}
-                <EfficiencyBar value={cluster.efficiency} isVisible={true} />
-
-                {/* METRICS */}
-                <div className="self-stretch pt-2 flex flex-col justify-start items-start gap-3.5">
-                  <MetricItem
-                    icon={metricIcons.cpu}
-                    label="CPU"
-                    value={metrics.cpu}
-                    color={metricColors.cpu}
-                  />
-                  <MetricItem
-                    icon={metricIcons.ram}
-                    label="RAM"
-                    value={metrics.ram}
-                    color={metricColors.ram}
-                  />
-                  <MetricItem
-                    icon={metricIcons.storage}
-                    label="Storage"
-                    value={metrics.storage}
-                    color={metricColors.storage}
-                  />
-                  <MetricItem
-                    icon={metricIcons.network}
-                    label="Network"
-                    value={metrics.network}
-                    color={metricColors.network}
-                  />
-                  <MetricItem
-                    icon={metricIcons.gpu}
-                    label="GPU"
-                    value={metrics.gpu}
-                    color={metricColors.gpu}
-                  />
-                </div>
-              </div>
-
-              {/* HOVER EFFECT */}
-              <div className="self-stretch pt-8 flex flex-col justify-start items-start">
-                <div className="self-stretch pt-6 pb-[2.50px] opacity-0 group-hover:opacity-100 border-t border-gray-200 dark:border-[#434654] group-hover:border-blue-400 dark:group-hover:border-[#B5C4FF]/50 flex flex-col justify-start items-center transition-all duration-300">
-                  <span className="text-blue-600 dark:text-[#B5C4FF] text-[10px] font-bold uppercase leading-4 tracking-widest group-hover:tracking-[0.2em] transition-all duration-300">
-                    CLICK FOR FULL ANALYSIS
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {filteredData.map((cluster, index) => (
+          <div 
+            key={cluster.id}
+            onClick={() => setSelectedCluster(cluster)}
+          >
+            <ClusterCard 
+              data={cluster} 
+              index={index} 
+              isVisible={true}
+            />
+          </div>
+        ))}
       </div>
 
       {/* MODAL */}
