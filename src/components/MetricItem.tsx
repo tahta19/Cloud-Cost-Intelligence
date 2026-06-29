@@ -1,3 +1,5 @@
+import { MaterialIcon } from './MaterialIcon';
+
 interface MetricItemProps {
   icon: string;
   label: string;
@@ -9,10 +11,17 @@ export const MetricItem: React.FC<MetricItemProps> = ({ icon, label, value, colo
   return (
     <div className="self-stretch inline-flex justify-between items-center">
       <div className="flex justify-start items-center gap-2.5">
-        <span className="text-base" style={{ color }}>{icon}</span>
-        <span className="text-slate-300 text-sm font-normal font-['Inter'] leading-5">{label}</span>
+        <MaterialIcon 
+          name={icon} 
+          size="base" 
+          className="text-text-secondary"
+          style={{ color }}
+        />
+        <span className="text-text-secondary text-sm font-medium font-['Inter'] leading-5 tracking-wide">
+          {label}
+        </span>
       </div>
-      <span className="text-neutral-200 text-sm font-semibold font-['Inter'] leading-5">{value}</span>
+      <span className="text-text-primary text-sm font-semibold font-['Inter'] leading-5">{value}</span>
     </div>
   );
 };
