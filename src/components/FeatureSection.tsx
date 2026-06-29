@@ -7,6 +7,7 @@ import { StatusBadge } from './StatusBadge';
 import { Modal } from './Modal';
 import { MaterialIcon } from './MaterialIcon';
 import { ClusterCard } from './ClusterCard';
+import { KPICard } from './KPICard';  // ✅ Import KPI Card
 
 export const FeatureSection: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -42,6 +43,16 @@ export const FeatureSection: React.FC = () => {
     return result;
   }, [data, activeFilter, sortBy]);
 
+  // ✅ KPI Data - Hitung dari filteredData
+  const kpiData = useMemo(() => {
+    const total = filteredData.length;
+    const critical = filteredData.filter((c) => c.status === 'Critical').length;
+    const warning = filteredData.filter((c) => c.status === 'Warning').length;
+    const lowEfficiency = filteredData.filter((c) => c.efficiency < 50).length;
+
+    return { total, critical, warning, lowEfficiency };
+  }, [filteredData]);
+
   // Data yang ditampilkan (batch)
   const displayedData = useMemo(() => {
     return filteredData.slice(0, visibleCount);
@@ -54,9 +65,8 @@ export const FeatureSection: React.FC = () => {
     if (isLoadingMore || !hasMore) return;
     
     setIsLoadingMore(true);
-    // Simulasi loading
     setTimeout(() => {
-      setVisibleCount(prev => Math.min(prev + 4, filteredData.length));
+      setVisibleCount((prev) => Math.min(prev + 4, filteredData.length));
       setIsLoadingMore(false);
     }, 500);
   }, [isLoadingMore, hasMore, filteredData.length]);
@@ -79,7 +89,7 @@ export const FeatureSection: React.FC = () => {
     return () => observer.disconnect();
   }, [hasMore, isLoadingMore, loadMore]);
 
-  // ✅ Reset saat filter/sort berubah - pakai useMemo buat reset
+  // Reset saat filter/sort berubah
   const prevFilterRef = useRef(activeFilter);
   const prevSortRef = useRef(sortBy);
 
@@ -146,6 +156,42 @@ export const FeatureSection: React.FC = () => {
         </p>
       </div>
 
+      {/* ✅ KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <KPICard
+          title="Total Clusters"
+          value={kpiData.total}
+          icon="dashboard"
+          color="text-blue-600 dark:text-[#B5C4FF]"
+          bgColor="bg-blue-50 dark:bg-blue-500/10"
+          index={0}
+        />
+        <KPICard
+          title="Critical"
+          value={kpiData.critical}
+          icon="error"
+          color="text-red-600 dark:text-[#FFB4AB]"
+          bgColor="bg-red-50 dark:bg-red-500/10"
+          index={1}
+        />
+        <KPICard
+          title="Warning"
+          value={kpiData.warning}
+          icon="warning"
+          color="text-amber-600 dark:text-[#F9BD22]"
+          bgColor="bg-amber-50 dark:bg-amber-500/10"
+          index={2}
+        />
+        <KPICard
+          title="Low Efficiency (<50%)"
+          value={kpiData.lowEfficiency}
+          icon="trending_down"
+          color="text-purple-600 dark:text-purple-400"
+          bgColor="bg-purple-50 dark:bg-purple-500/10"
+          index={3}
+        />
+      </div>
+
       {/* Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
         <FilterTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
@@ -199,7 +245,7 @@ export const FeatureSection: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL */}
+      {/* MODAL - Sama seperti sebelumnya */}
       <Modal
         isOpen={!!selectedCluster}
         onClose={() => setSelectedCluster(null)}
