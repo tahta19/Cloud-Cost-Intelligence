@@ -1,3 +1,4 @@
+
 export interface ClusterMetrics {
   cpu: string;
   ram: string;
@@ -9,9 +10,9 @@ export interface ClusterMetrics {
 export interface ClusterData {
   id: string;
   title: string;
-  status: 'Active' | 'Warning' | 'Critical';
+  status: 'Active' | 'Warning' | 'Critical';  // langsung inline
   cost: number;
-  trend: 'up' | 'down';
+  trend: 'up' | 'down';                        // langsung inline
   efficiency: number;
   metrics: ClusterMetrics;
 }
