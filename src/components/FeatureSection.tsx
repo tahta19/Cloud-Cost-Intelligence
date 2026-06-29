@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useClusterData } from '../hooks/useClusterData';
 import { FilterTabs } from './FilterTabs';
 import { SortDropdown } from './SortDropdown';
@@ -12,6 +12,9 @@ export const FeatureSection: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [sortBy, setSortBy] = useState('cost-desc');
   const [selectedCluster, setSelectedCluster] = useState<ClusterData | null>(null);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading, error, refetch } = useClusterData();
 
@@ -38,6 +41,55 @@ export const FeatureSection: React.FC = () => {
 
     return result;
   }, [data, activeFilter, sortBy]);
+
+  // Data yang ditampilkan (batch)
+  const displayedData = useMemo(() => {
+    return filteredData.slice(0, visibleCount);
+  }, [filteredData, visibleCount]);
+
+  const hasMore = visibleCount < filteredData.length;
+
+  // Load more function
+  const loadMore = useCallback(() => {
+    if (isLoadingMore || !hasMore) return;
+    
+    setIsLoadingMore(true);
+    // Simulasi loading
+    setTimeout(() => {
+      setVisibleCount(prev => Math.min(prev + 4, filteredData.length));
+      setIsLoadingMore(false);
+    }, 500);
+  }, [isLoadingMore, hasMore, filteredData.length]);
+
+  // Infinite scroll with Intersection Observer
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px 100px 0px' }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, loadMore]);
+
+  // ✅ Reset saat filter/sort berubah - pakai useMemo buat reset
+  const prevFilterRef = useRef(activeFilter);
+  const prevSortRef = useRef(sortBy);
+
+  useEffect(() => {
+    if (prevFilterRef.current !== activeFilter || prevSortRef.current !== sortBy) {
+      setVisibleCount(4);
+      prevFilterRef.current = activeFilter;
+      prevSortRef.current = sortBy;
+    }
+  }, [activeFilter, sortBy]);
 
   if (isLoading) {
     return (
@@ -73,10 +125,6 @@ export const FeatureSection: React.FC = () => {
     );
   }
 
-
-
-
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       {/* Header */}
@@ -104,9 +152,14 @@ export const FeatureSection: React.FC = () => {
         <SortDropdown value={sortBy} onChange={setSortBy} />
       </div>
 
+      {/* Info jumlah data */}
+      <div className="mb-4 text-sm text-gray-500 dark:text-[#C3C5D7]/70">
+        Showing {displayedData.length} of {filteredData.length} clusters
+      </div>
+
       {/* Grid - Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredData.map((cluster, index) => (
+        {displayedData.map((cluster, index) => (
           <div 
             key={cluster.id}
             onClick={() => setSelectedCluster(cluster)}
@@ -119,6 +172,32 @@ export const FeatureSection: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Infinite Scroll Trigger + Loader */}
+      {hasMore && (
+        <div 
+          ref={loadMoreRef}
+          className="flex justify-center items-center py-8 mt-4"
+        >
+          {isLoadingMore ? (
+            <div className="flex items-center gap-3 text-gray-500 dark:text-[#C3C5D7]/70">
+              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm">Loading more clusters...</span>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-400 dark:text-[#C3C5D7]/50">
+              Scroll to load more
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* No more data */}
+      {!hasMore && displayedData.length > 0 && (
+        <div className="text-center py-8 text-gray-400 dark:text-[#C3C5D7]/50 text-sm">
+          🎉 You've seen all {displayedData.length} clusters
+        </div>
+      )}
 
       {/* MODAL */}
       <Modal
