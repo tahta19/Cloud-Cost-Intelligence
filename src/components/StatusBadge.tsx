@@ -1,5 +1,5 @@
 interface StatusBadgeProps {
-  status: 'Active' | 'Warning' | 'Critical';
+  status?: 'Active' | 'Warning' | 'Critical';
 }
 
 const statusStyles = {
@@ -8,9 +8,10 @@ const statusStyles = {
   Critical: 'bg-red-300/10 text-red-300 border-red-300/20',
 };
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ status = 'Active' }) => {
+  const style = statusStyles[status] || statusStyles.Active;
   return (
-    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${statusStyles[status]}`}>
+    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${style}`}>
       {status}
     </span>
   );

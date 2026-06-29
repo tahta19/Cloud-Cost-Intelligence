@@ -9,7 +9,7 @@ export const transformProductsToClusters = (products: Product[]): ClusterData[] 
     // Metrics yang lebih bervariasi
     const cpu = Math.round((product.rating / 5) * 80 + 20);
     const ram = Math.round((product.stock / 100) * 64 + 16);
-    const storage = Number((Math.round((product.price / 1000) * 6 + (index * 0.5) + 1) * 0.5).toFixed(1));
+    const storage = Number((Math.round((product.price / 1000) * 8 + (index * 0.8) + 0.5) * 0.5).toFixed(1));
     const network = Math.round((product.rating / 5) * 40 + 10);
     
     const metrics: ClusterMetrics = {
@@ -20,24 +20,12 @@ export const transformProductsToClusters = (products: Product[]): ClusterData[] 
       gpu: gpuConfigs[index % gpuConfigs.length],
     };
 
-    // Efficiency bervariasi (30-95%)
-    const efficiency = Math.min(Math.round((product.discountPercentage * 0.6) + (product.rating * 5) + 20), 95);
+    // Efficiency lebih bervariasi (20-90%)
+    const efficiency = Math.min(Math.round((product.discountPercentage * 0.4) + (product.rating * 8) + 10), 90);
     const trend = efficiency > 50 ? 'down' : 'up';
 
-    // Cost bervariasi (10-150)
-    const cost = Math.round((product.price * 0.12) + (index * 8) + 5);
-
-    console.log(`Cluster ${clusterNames[index]}:`, { 
-      cost, 
-      efficiency, 
-      metrics,
-      rawData: {
-        price: product.price,
-        discount: product.discountPercentage,
-        rating: product.rating,
-        stock: product.stock
-      }
-    });
+    // Cost lebih besar (50-250)
+    const cost = Math.round((product.price * 0.25) + (index * 15) + 20);
 
     return {
       id: String(product.id),
